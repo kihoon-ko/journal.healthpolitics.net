@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Politics - An International Peer-Reviewed Journal</title>
+    
+    <meta name="description" content="Health Politics is an international, peer-reviewed, open-access journal dedicated to scholarship on the political determinants of health, health policy, and governance.">
+    <meta property="og:title" content="Health Politics - An International Peer-Reviewed Journal">
+    <meta property="og:description" content="Advancing scholarly understanding of how political processes, institutions, and power structures shape health outcomes worldwide.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://journal.healthpolitics.net">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --color-primary: #1e3a5f;
+            --color-secondary: #2c5282;
+            --color-accent: #3182ce;
+            --color-bg: #f8fafc;
+            --color-text: #1a202c;
+            --color-text-light: #4a5568;
+            --color-border: #e2e8f0;
+            /* DRAFT color variable removed as it's no longer needed */
+            /* --color-draft: #c53030;
+            */ 
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', Georgia, serif;
+            color: var(--color-primary);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0;
+            transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0);
+            }
+        }
+
+        .nav-button {
+            position: relative;
+            transition: all 0.3s ease;
+            padding-bottom: 0.5rem;
+        }
+
+        .nav-button:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--color-accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-button:hover:after {
+            width: 100%;
+        }
+
+        .nav-button.active {
+            color: var(--color-primary);
+        }
+
+        .nav-button.active:after {
+            width: 100%;
+            background: var(--color-primary);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
+            box-shadow: 0 4px 6px rgba(49, 130, 206, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(49, 130, 206, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .sub-nav-button {
+            transition: all 0.3s;
+            border: 1px solid var(--color-border);
+        }
+
+        .sub-nav-button.active {
+            background-color: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .sub-nav-button:not(.active):hover {
+            background-color: #edf2f7;
+        }
+
+        .academic-card {
+            background-color: white;
+            border: 1px solid var(--color-border);
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            padding: 2rem;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .academic-card-feature {
+            background-color: white;
+            border: 1px solid var(--color-border);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .academic-card-feature:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        /* DRAFT-related styles removed */
+        /* .draft-section { ... } */
+        /* .draft-text { ... } */
+
+        .profile-photo-placeholder {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-right: 1.5rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .step-item {
+            border-color: var(--color-primary);
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .step-item:after {
+            content: '→';
+            color: var(--color-accent);
+            position: absolute;
+            right: -1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .step-item:last-child:after {
+            content: '';
+        }
+
+        @media (max-width: 1024px) {
+            .step-item {
+                margin-bottom: 2rem;
+                margin-right: 0;
+            }
+            .step-item:after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -1.75rem;
+                transform: 
+                translateX(50%);
+            }
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            height: 350px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        .journal-badge {
+            display: inline-block;
+            background: white;
+            color: var(--color-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0.25rem;
+            border: 1px solid var(--color-primary);
+        }
+
+        /* Professional icons for Key Features */
+        .feature-icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            background-color: var(--color-accent);
+            color: white;
+            border-radius: 50%;
+        }
+
+        .feature-icon-box svg {
+            width: 30px;
+            height: 30px;
+            stroke-width: 2;
+        }
+
+        .disabled-button {
+            cursor: not-allowed;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+
+    <header class="bg-white shadow-md sticky top-0 z-50 border-b-2 border-gray-200">
+        <nav class="container mx-auto px-4 md:px-4 py-4 max-w-6xl">
+            <div class="flex flex-col lg:flex-row justify-between items-center lg:gap-1">
+                <div class="mb-4 
+                lg:mb-0 flex-shrink-0">
+                    <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 font-serif tracking-tight">
+                        Health Politics
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1">An International Peer-Reviewed Journal</p>
+                </div>
+
+                <div class="flex flex-col lg:flex-row items-center gap-1 lg:gap-2 flex-1 lg:justify-end">
+                    <div class="flex flex-wrap space-x-3 border-b-2 lg:border-b-0 pb-2 lg:pb-0 justify-center">
+                        <button class="nav-button active font-semibold text-gray-700 text-base" data-target="hp-overview">Overview</button>
+                        <button class="nav-button font-semibold text-gray-700 text-base" data-target="hp-authors">For Authors</button>
+                        <button class="nav-button font-semibold text-gray-700 text-base" data-target="hp-reviewers">For Reviewers</button>
+                        <button class="nav-button font-semibold text-gray-700 text-base" data-target="hp-process">Review Process</button>
+                        <button class="nav-button font-semibold text-gray-700 text-base" data-target="hp-information">Policies</button>
+                        <button class="nav-button font-semibold text-gray-700 text-base" data-target="hp-about">About</button>
+                    </div>
+                    <a href="https://forms.gle/BNbUwNCqm4fi55xU9" target="_blank" class="submit-btn text-white font-semibold px-4 py-2 rounded-lg whitespace-nowrap text-sm ml-4">
+                        Submit Manuscript
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 md:px-4 max-w-7xl">
+
+        <section id="hp-overview" class="page-section active py-8">
+            
+            <div class="hero-section rounded-xl mb-12 px-8 py-12">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h2 class="text-4xl font-bold mb-4 text-white">Advancing Scholarship on the Politics of Health</h2>
+                    <p class="text-xl text-blue-200 mb-6">
+                        An international, peer-reviewed journal dedicated to understanding how political processes, institutions, and power structures shape health outcomes worldwide.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-2 mt-6">
+                        <span class="journal-badge">100% Gold Open Access</span>
+                        <span class="journal-badge">No APCs (Launch Waiver)</span>
+                        <span class="journal-badge">Double-Blind Peer Review</span>
+                        <span class="journal-badge">Global Focus</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="academic-card mb-8 mt-16">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6">Aims & Scope</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                    <strong class="font-bold">Health Politics</strong> provides a multidisciplinary platform across <strong class="font-bold">political science, public health, sociology, economics, and ethics</strong> to advance scholarly understanding of how political processes, institutions, ideologies, and power structures shape health outcomes, health systems, and population well-being.
+                </p>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    Our scope encompasses the political determinants of health; comparative and global health policy; governance and accountability in health systems; social movements and civil society; the political economy of health and welfare; and ethical and normative dimensions of health decision-making. We welcome submissions that bridge disciplines, incorporate historical or cross-national perspectives, and strengthen the evidence base for equitable and sustainable health policies worldwide.
+                </p>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold text-center mb-8">Why Publish With Us</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="academic-card-feature">
+                        <div class="feature-icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0v4m-4 8H4a2 2 0 01-2-2V9a2 2 0 012-2h1m10 10v-5a2 2 0 00-2-2h-1m-7 0H9a2 2 0 00-2 2v5m7 0v5a2 2 0 01-2 2H9a2 2 0 01-2-2v-5m7 0H9" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-3 font-serif">100% Gold Open Access</h4>
+                        <p class="text-gray-600">All articles are freely available upon publication under a Creative Commons (CC BY) license, maximizing your research impact.</p>
+                    </div>
+                    <div class="academic-card-feature">
+                        <div class="feature-icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 12v.01M12 12v- .01M12 12v-.01M12 16c-1.657 0-3-.895-3-2s1.343-2 3-2 3-.895 3-2 1.343-2 3-2m0 8c1.11 0 2.08-.402 2.599 1M12 16v1m0-1v-.01M12 12v.01M12 12v-.01m0 .01v-.01m0 .01v.01m-3.401-1.002a2.5 2.5 0 00-1.599 4.004m1.599-4.004a2.5 2.5 0 011.599 4.004m0 0v.01m0-.01V12m0 .01V12m0 .01V12m0 0v.01m-1.599 2.998a2.5 2.5 0 101.599-4.004m-1.599 4.004V12m0 0v.01m0-.01v-.01m0 .01v.01m0 0v.01M12 12v.01M12 12v-.01m3.401 1.002a2.5 2.5 0 001.599-4.004m-1.599 4.004a2.5 2.5 0 01-1.599-4.004m0 0v-.01m0 .01V12m0-.01V12m0-.01V12m0 0v-.01m1.599-2.998a2.5 2.5 0 10-1.599 4.004m1.599-4.004V12m0 0v-.01m0 .01v.01m0 0v.01M12 12v.01M12 12v-.01m0 0v.01" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18V6m0 12a6 6 0 110-12 6 6 0 010 12z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h.01M19 12h.01" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-3 font-serif">No APCs (Launch Waiver)</h4>
+                        <p class="text-gray-600">No Article Processing Charges will be applied until the journal is indexed in Scopus/ESCI, supporting authors worldwide.</p>
+                    </div>
+                    <div class="academic-card-feature">
+                        <div class="feature-icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-3 font-serif">Rigorous Peer Review</h4>
+                        <p class="text-gray-600">All research manuscripts undergo <strong class="font-bold">double-blind peer review</strong> to ensure quality, fairness, and constructive feedback.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="academic-card mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4">Call for Papers: Inaugural Issue</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                    We are soliciting outstanding manuscripts for publication in <strong>Volume 1, Issue 1 (Spring 2026)</strong>.
+                </p>
+                <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                    The inaugural issue will feature in-depth research exploring <em>'The Resilience of Public Health Systems in Times of Political Turmoil'</em>, focusing on the role of health policy and institutional governance during political and social crises.
+                </p>
+                <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                    We welcome all manuscript types (especially Original Research Articles and Theoretical Articles) that align with the journal's Aims & Scope.
+                </p>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mt-6">
+                    <p class="font-semibold text-blue-900">📅 Submission Deadline: December 31, 2025</p>
+                </div>
+                <div class="mt-6 text-center">
+                    <a href="https://forms.gle/BNbUwNCqm4fi55xU9" target="_blank" class="submit-btn inline-block text-white font-semibold px-8 py-3 rounded-lg text-lg">
+                        Submit Your Manuscript
+                    </a>
+                </div>
+            </div>
+
+            <div class="academic-card">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6">Editorial Leadership</h2>
+
+                <h4 class="text-xl font-semibold border-b-2 border-gray-300 pb-3 mb-6 font-serif">Editors-in-Chief</h4>
+                <div class="space-y-6 mb-8">
+                    <div class="flex items-start bg-gray-50 p-6 rounded-lg">
+                        <div class="profile-photo-placeholder">CM</div>
+                        <div class="flex-1">
+                            <h5 class="text-xl font-bold">Carles Muntaner, MD MHS PhD</h5>
+                            <p class="text-sm text-gray-600 mb-3 italic">University of Toronto, Canada</p>
+                            <p class="text-gray-700 text-sm">
+                                A world-renowned authority on the political determinants of public health, with over two decades of contributions to the study of inequality and health disparities.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start bg-gray-50 p-6 rounded-lg">
+                        <div class="profile-photo-placeholder">HC</div>
+                        <div class="flex-1">
+                            <h5 class="text-xl font-bold">Haejoo Chung, RPh, MSc, PhD</h5>
+                            <p class="text-sm text-gray-600 mb-3 italic">Korea University, South Korea</p>
+                            <p class="text-gray-700 text-sm">
+                                An expert in healthcare system governance, actively engaged in research on health policy and pharmaceutical regulation in East Asia.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h4 class="text-xl font-semibold border-b-2 border-gray-300 pb-3 mb-4 font-serif">Associate Editors</h4>
+                        <p class="text-sm text-gray-500 italic mb-4">Being updated...</p>
+                        <ul class="space-y-2 text-gray-700">
+                            <li><strong>Virginia Gunn</strong> – <em class="text-gray-600">Cape Breton University, Canada</em></li>
+                            <li><strong>Lauri Kokkinen</strong> – <em class="text-gray-600">Tampere University, Finland</em></li>
+                            <li><strong>Edwin Ng</strong> – <em class="text-gray-600">University of Waterloo, Canada</em></li>
+                            <li><strong>Rozina Somani</strong> – <em class="text-gray-600">University of Saskatchewan, Canada</em></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-semibold border-b-2 border-gray-300 pb-3 mb-4 font-serif">Editorial Board</h4>
+                        <p class="text-sm text-gray-500 italic mb-4">Being updated...</p>
+                        <ul class="space-y-2 text-gray-700">
+                            <li><strong>Seye Abimbola</strong> – <em class="text-gray-600">University of Sydney, Australia</em></li>
+                            <li><strong>Clare Bambra</strong> – <em class="text-gray-600">Newcastle University, UK</em></li>
+                            <li><strong>Insa Linnea Backhaus-Hoven</strong> – <em class="text-gray-600">Norwegian University of Science and Technology, Norway</em></li>
+                            <li><strong>Joan Benach</strong> – <em class="text-gray-600">Universitat Pompeu Fabra, Spain</em></li>
+                            <li><strong>Bo Burström</strong> – <em class="text-gray-600">Karolinska Institutet, Sweden</em></li>
+                            <li><strong>Patrick Fafard</strong> – <em class="text-gray-600">University of Ottawa, Canada</em></li>
+                            <li><strong>Pablo Gálvez Fernández</strong> – <em class="text-gray-600">University of Toronto, Canada</em></li>
+                            <li><strong>Benjamin Goodair</strong> – <em class="text-gray-600">The London School of Economics and Political Science, UK</em></li>
+                            <li><strong>Patrick Hassenteufel</strong> – <em class="text-gray-600">University of Versailles/Sciences Po, France</em></li>
+                            <li><strong>Wonmo Jang</strong> – <em class="text-gray-600">Seoul National University, Republic of Korea</em></li>
+                            <li><strong>Helen Jordan</strong> – <em class="text-gray-600">University of Melbourne, Australia</em></li>
+                            <li><strong>Rockli Kim</strong> – <em class="text-gray-600">Korea University, Republic of Korea</em></li>
+                            
+                            <li><strong>Julia Lynch</strong> – <em class="text-gray-600">University of Pennsylvania, USA</em></li>
+                            <li><strong>Shai Mulinari</strong> – <em class="text-gray-600">Lund University, Sweden</em></li>
+                            <li><strong>Laura Sochas</strong> – <em class="text-gray-600">University of Edinburgh, UK</em></li>
+                            <li><strong>Monika Steffen</strong> – <em class="text-gray-600">Grenoble Alpes University, France</em></li>
+                            <li><strong>Young-jeon Shin</strong> – <em class="text-gray-600">Hanyang University, Republic of Korea</em></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="border-t pt-6">
+                    <h4 class="text-xl font-semibold border-b-2 border-gray-300 pb-3 mb-4 font-serif">Editorial Consultants</h4>
+                    <p class="text-gray-700 mb-4">A panel of distinguished experts offering advisory input on emerging topics, ethical standards, and regional representation.</p>
+                    <ul class="space-y-2 text-gray-700">
+                        <li><strong>Saerom Kim</strong> – <em class="text-gray-600">Inje University, Republic of Korea</em></li>
+                        <li><strong>Daseul Moon</strong> – <em class="text-gray-600">People's Health Institute, Republic of Korea</em></li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="hp-authors" class="page-section py-8">
+            
+            <div class="academic-card mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6">Author Guidelines</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                    This tool provides detailed requirements for all article types. Select an article type below to view its specific description, word count limits, and abstract requirements.
+                </p>
+
+                <div class="mb-6">
+                    <label for="article-select" class="block text-lg font-semibold mb-3">Select Article Type:</label>
+                    <select id="article-select" class="w-full max-w-2xl p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg">
+                        <option value="original">Original Research Articles</option>
+                        <option value="theoretical">Theoretical Articles</option>
+                        <option value="reviews">Reviews of the Literature</option>
+                        <option value="dataMethods">Data & Methods Articles / Data & Code Notes</option>
+                        <option value="policyPractice">Policy & Practice Articles / Field Notes</option>
+                        <option value="perspectives">Perspectives & Debates</option>
+                        <option value="commentaries">Commentaries</option>
+                        <option value="editorials">Editorials</option>
+                        <option value="caseStudies">Case Studies</option>
+                        <option value="shortReports">Short Reports / Research Notes</option>
+                        <option value="bookReviews">Book Reviews</option>
+                    </select>
+                </div>
+
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 p-8 rounded-xl">
+                    <h3 id="article-title" class="text-2xl font-bold mb-4 font-serif text-blue-900">Original Research Articles</h3>
+                    <p id="article-description" class="text-lg text-gray-800 mb-6">Empirical investigations using quantitative, qualitative, or mixed-methods approaches that offer novel insights into the interaction between politics and health.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
+                            <h4 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Word Count</h4>
+                            <p id="article-wordcount" class="text-3xl font-bold text-blue-900 mb-2">6,000–8,000</p>
+                            <p id="article-wordcount-notes" class="text-sm text-gray-600">Excludes abstract, references, tables, and figures.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
+                            <h4 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Abstract</h4>
+                            <p id="article-abstract" class="text-3xl font-bold text-blue-900">Mandatory (250–300 words)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="academic-card bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center">
+                <h3 class="text-2xl font-bold mb-4 text-white">Ready to Submit Your Research?</h3>
+                <p class="text-lg mb-6 text-blue-200">Join our community of scholars advancing the politics of health globally.</p>
+                <a href="https://forms.gle/BNbUwNCqm4fi55xU9" target="_blank" class="inline-block bg-white text-blue-600 font-bold px-8 py-3 rounded-lg text-lg hover:bg-gray-100 transition-all">
+                    Go to Submission System →
+                </a>
+            </div>
+
+            <div class="academic-card mt-8">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4">Article Processing Charges (APC) Policy</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                    <strong class="font-bold">Health Politics</strong> waives 100% of Article Processing Charges during its launch phase to maximize research accessibility and support authors.
+                </p>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    <strong>Waiver Period:</strong> APCs are waived until the journal is indexed in major databases (<strong class="font-bold">Scopus and/or ESCI</strong>) OR for three (3) years from launch, whichever occurs later.
+                </p>
+                <p class="text-lg text-gray-700 leading-relaxed mt-4">
+                    Any future introduction of APCs will be announced at least <strong class="font-bold">90 days</strong> in advance and <strong class="font-bold">will not apply retroactively</strong> to manuscripts already under review. Standing full waivers for <strong class="font-bold">LMIC</strong> authors and case-by-case hardship waivers will be available thereafter.
+                </p>
+            </div>
+
+            <div class="academic-card mt-8">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4">ORCID Mandate</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                    To ensure clear attribution of scholarly work, <strong class="font-bold">Health Politics</strong> requires ORCID identifiers for all contributing authors.
+                </p>
+                <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg">
+                    <ul class="space-y-3 text-gray-700">
+                        <li><strong>Requirement:</strong> ORCID identifiers for corresponding authors and all co-authors must be provided during submission.</li>
+                        <li><strong>Benefit:</strong> ORCID ensures accurate attribution and credit tracking, even after affiliation changes.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="hp-reviewers" class="page-section py-8">
+            <div class="academic-card">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6">Reviewer Guidelines</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-8">We rely on the expertise and generosity of our reviewers to maintain the quality and integrity of <em>Health Politics</em>. These guidelines outline our expectations and appreciation for your vital contribution.</p>
+                <div class="border-t pt-6 mt-6">
+                    <h3 class="text-2xl font-bold font-serif text-blue-800 mb-3">Our Review Philosophy</h3>
+                    <p class="text-gray-700 mb-4">Our goal is to provide authors with constructive, high-quality feedback, even if a manuscript is not accepted. We ask that all reviews be:</p>
+                    <ul class="space-y-3 text-gray-700 list-disc pl-5">
+                        <li><strong class="font-bold">Constructive:</strong> Feedback should be actionable, helping the author to improve their work, whether for this journal or another.</li>
+                        <li><strong class="font-bold">Collegial & Respectful:</strong> We adhere to a professional, non-adversarial tone. Please critique the work, not the author.</li>
+                        <li><strong class="font-bold">Timely:</strong> We are committed to providing authors with efficient decisions, which depends on the timeliness of your report.</li>
+                    </ul>
+                </div>
+                <div class="border-t pt-6 mt-6">
+                    <h3 class="text-2xl font-bold font-serif text-blue-800 mb-3">Responsibilities & Ethics</h3>
+                    <p class="text-gray-700 mb-4">We adhere to the COPE (Committee on Publication Ethics) guidelines for peer reviewers.</p>
+                    <ul class="space-y-3 text-gray-700 list-disc pl-5">
+                        <li><strong class="font-bold">Conflict of Interest (COI):</strong> Please decline to review if you have a competing interest (e.g., recent co-authorship, direct financial stake, close personal relationship, or are in direct competition). If unsure, please contact the Editorial Office.</li>
+                        <li><strong class="font-bold">Confidentiality:</strong> Manuscripts are confidential. Please do not share, discuss, or use the content of the manuscript before publication. Our process is <strong class="font-bold">double-blind</strong>; please do not attempt to identify the author.</li>
+                        <li><strong class="font-bold">Suspected Misconduct:</strong> If you suspect plagiarism, fabrication, or other ethical concerns, please contact the handling Associate Editor directly and privately.</li>
+                    </ul>
+                </div>
+                <div class="border-t pt-6 mt-6">
+                    <h3 class="text-2xl font-bold font-serif text-blue-800 mb-3">Target Timelines</h3>
+                    <ul class="space-y-3 text-gray-700 list-disc pl-5">
+                        <li><strong class="font-bold">Invitation Response:</strong> We ask for a response to review invitations within <strong>3-5 days</strong>.</li>
+                        <li><strong class="font-bold">Review Submission:</strong> We typically request that reviews be completed within <strong>14-21 days</strong>.</li>
+                        <li><strong class="font-bold">Extensions:</strong> We understand that schedules are demanding. If you require an extension, please request one through the submission system or by emailing the editor as soon as possible.</li>
+                    </ul>
+                </div>
+                <div class="border-t pt-6 mt-6">
+                    <h3 class="text-2xl font-bold font-serif text-blue-800 mb-3">Reviewer Recognition</h3>
+                    <p class="text-gray-700">High-quality peer review is essential, and we are committed to recognizing this contribution. We offer formal recognition of your work through services like ReviewerCredits and/or Publons (part of Web of Science) and provide official certificates of appreciation upon request.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="hp-process" class="page-section py-8">
+            <div class="academic-card">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6">Editorial Process & Peer Review</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-8">Our editorial process ensures timely, fair, and rigorous evaluation of all submissions. Explore our review timelines and ethical standards below.</p>
+                <h3 class="text-2xl font-bold mb-6 font-serif">Service Level Targets (SLA)</h3>
+                <p class="text-gray-700 mb-6">We are committed to timely decisions. These are our target timelines from submission:</p>
+                <div class="chart-container mb-8">
+                    <canvas id="slaChart"></canvas>
+                </div>
+                <p class="text-center text-sm text-gray-600 mb-8">Note: Full peer review times may vary based on reviewer availability and manuscript complexity. Major revision authors are targeted 8–10 weeks for reply; minor revision authors 3–4 weeks.</p>
+                <div class="border-t pt-8">
+                    <h3 class="text-2xl font-bold mb-6 font-serif">Publication Ethics & Integrity</h3>
+                    <ul class="space-y-4 text-gray-700">
+                        <li class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h4 class="font-semibold text-lg text-blue-800">Peer Review Standard</h4>
+                            <p>All research manuscripts utilize a <strong class="font-bold">double-blind</strong> review process to ensure impartiality and maintain a <strong>constructive tone</strong> in feedback.</p>
+                        </li>
+                        <li class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h4 class="font-semibold text-lg text-blue-800">Research Integrity</h4>
+                            <p>We adhere to the spirit of COPE/ICMJE guidelines and <strong>require full disclosure</strong> of funding sources and author conflicts of interest (COI) statements.</p>
+                        </li>
+                        <li class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h4 class="font-semibold text-lg text-blue-800">Transparency</h4>
+                            <p>We actively encourage <strong>data/code availability</strong> or a clear statement explaining any restrictions on sharing, to strengthen cumulative science.</p>
+                        </li>
+                        <li class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h4 class="font-semibold text-lg text-blue-800">Conflict of Interest (COI)</h4>
+                            <p>Submissions involving any Editorial Board member are handled by a <strong>different</strong> editor to ensure impartiality; an audit trail is maintained for all COI routing.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="hp-information" class="page-section py-8">
+            <div class="academic-card">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6">Journal Policies</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-4">A comprehensive overview of our governing policies, standards, and operational details.</p>
+                <div class="border-t pt-6 mt-6">
+                    <div class="flex flex-wrap items-center mb-3">
+                        <h3 class="text-2xl font-bold font-serif text-blue-800">Technical Infrastructure & Discoverability</h3>
+                    </div>
+                    <p class="text-gray-700 mb-4"><strong>Technical Design and Infrastructure Plan:</strong> Ensuring long-term access, indexing, and optimal search engine performance.</p>
+                    <ul class="space-y-3 text-gray-700 list-disc pl-5">
+                        <li><strong>Archiving:</strong> Implementation of <strong>LOCKSS/CLOCKSS</strong> or Portico for permanent digital preservation, guaranteeing access even if the journal ceases publication.</li>
+                        <li><strong>Discoverability (SEO):</strong> The website will implement dedicated academic SEO strategies, ensuring metadata is optimized for indexing by major platforms (Google Scholar, etc.) via CrossRef/DOI.</li>
+                        <li><strong>Submission System (OJS):</strong> Manuscript submission and peer review will be managed via an external <strong>Open Journal Systems (OJS)</strong> platform for standardized workflow.</li>
+                        <li><strong>Data Interoperability:</strong> Provision of API and data feeds to enable seamless synchronization with institutional repositories and research platforms.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-100 border-t border-gray-200 py-12 mt-12">
+        <div class="container mx-auto px-4 max-w-6xl text-center">
+            <p class="text-gray-600 mb-4">&copy; 2025 Health Politics. All rights reserved.</p>
+            <div class="flex justify-center space-x-6 text-sm font-semibold text-gray-500">
+                <a href="#" class="hover:text-blue-600">Privacy Policy</a>
+                <a href="#" class="hover:text-blue-600">Terms of Use</a>
+                <a href="#" class="hover:text-blue-600">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Navigation
+            const navButtons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.page-section');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const target = button.getAttribute('data-target');
+                    
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === target) {
+                            section.classList.add('active');
+                        }
+                    });
+                    
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            // Article Type Selector
+            const articleSelect = document.getElementById('article-select');
+            const articleTitle = document.getElementById('article-title');
+            const articleDescription = document.getElementById('article-description');
+            const articleWordCount = document.getElementById('article-wordcount');
+            const articleAbstract = document.getElementById('article-abstract');
+
+            const articleData = {
+                original: {
+                    title: "Original Research Articles",
+                    description: "Empirical investigations using quantitative, qualitative, or mixed-methods approaches that offer novel insights into the interaction between politics and health.",
+                    wordCount: "6,000–8,000",
+                    abstract: "Mandatory (250–300 words)"
+                },
+                theoretical: {
+                    title: "Theoretical Articles",
+                    description: "Papers that advance conceptual frameworks, normative theories, or critical perspectives on health policy and governance.",
+                    wordCount: "5,000–7,000",
+                    abstract: "Mandatory (200–250 words)"
+                },
+                reviews: {
+                    title: "Reviews of the Literature",
+                    description: "Systematic or narrative reviews providing a comprehensive synthesis of existing research on a specific political or policy-related health topic.",
+                    wordCount: "7,000–9,000",
+                    abstract: "Mandatory (250–300 words)"
+                },
+                dataMethods: {
+                    title: "Data & Methods Articles / Data & Code Notes",
+                    description: "Focus on new datasets, methodological innovations, or the application of novel techniques to health politics research.",
+                    wordCount: "3,000–5,000",
+                    abstract: "Mandatory (150–200 words)"
+                },
+                policyPractice: {
+                    title: "Policy & Practice Articles / Field Notes",
+                    description: "Analysis of specific policy reforms, implementation challenges, or health system governance in practice, often with a regional focus.",
+                    wordCount: "4,000–6,000",
+                    abstract: "Mandatory (200–250 words)"
+                },
+                perspectives: {
+                    title: "Perspectives & Debates",
+                    description: "Opinion pieces or critical dialogues on emerging issues, controversial topics, or new directions in the field.",
+                    wordCount: "2,000–3,000",
+                    abstract: "Mandatory (100–150 words)"
+                },
+                commentaries: {
+                    title: "Commentaries",
+                    description: "Short, focused responses to articles previously published in the journal or urgent reflections on current global health events.",
+                    wordCount: "1,000–1,500",
+                    abstract: "None required"
+                },
+                editorials: {
+                    title: "Editorials",
+                    description: "Perspectives provided by the editors or invited experts on the state of the journal or key themes in health politics.",
+                    wordCount: "1,000–2,000",
+                    abstract: "None required"
+                },
+                caseStudies: {
+                    title: "Case Studies",
+                    description: "Detailed examinations of a single event, policy reform, or country-specific health political challenge.",
+                    wordCount: "4,000–5,000",
+                    abstract: "Mandatory (150–200 words)"
+                },
+                shortReports: {
+                    title: "Short Reports / Research Notes",
+                    description: "Brief reports on preliminary findings, pilot studies, or replication studies.",
+                    wordCount: "2,000–3,000",
+                    abstract: "Mandatory (150 words)"
+                },
+                bookReviews: {
+                    title: "Book Reviews",
+                    description: "Critical reviews of recent books relevant to the politics of health and health policy.",
+                    wordCount: "800–1,200",
+                    abstract: "None required"
+                }
+            };
+
+            articleSelect.addEventListener('change', (e) => {
+                const data = articleData[e.target.value];
+                articleTitle.textContent = data.title;
+                articleDescription.textContent = data.description;
+                articleWordCount.textContent = data.wordCount;
+                articleAbstract.textContent = data.abstract;
+            });
+
+            // SLA Chart (using chart.js)
+            const slaCtx = document.getElementById('slaChart');
+            if (slaCtx) {
+                new Chart(slaCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Initial Screening', 'First Decision', 'Final Decision (Accepted)'],
+                        datasets: [{
+                            label: 'Target Time (Days)',
+                            data: [7, 45, 120],
+                            backgroundColor: '#3182ce',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Editorial Service Level Targets',
+                                font: {
+                                    family: 'Merriweather',
+                                    size: 16
+                                },
+                                color: '#1e3a5f'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.raw} days`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Days',
+                                    font: {
+                                        family: 'Inter',
+                                        size: 14
+                                    }
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    font: {
+                                        family: 'Inter',
+                                        size: 14
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        
+        }); // End of DOMContentLoaded
+    </script>
+</body>
+</html>
+
